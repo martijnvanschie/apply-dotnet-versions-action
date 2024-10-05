@@ -1,5 +1,7 @@
 const core = require("@actions/core");
+const xpath = require('xpath');
 const fs = require('fs');
+const { DOMParser, XMLSerializer } = require('xmldom');
 
 async function run() {
   try {
@@ -23,10 +25,11 @@ async function run() {
       core.info(`Input project file: ${_projectFile}`);
     core.endGroup();
 
-    core.startGroup("Verify project file");
-
-      replaceXPath(_projectFile, "dd", "dd");
-
+    core.startGroup("Replace assembly versions");
+      replaceXPath(_projectFile, "//Project/PropertyGroup/AssemblyVersion/text()", _versionAssembly);
+      replaceXPath(_projectFile, "//Project/PropertyGroup/FileVersion/text()", _versionFile);
+      replaceXPath(_projectFile, "//Project/PropertyGroup/InformationalVersion/text()", _versionInformational);
+      replaceXPath(_projectFile, "//Project/PropertyGroup/PackageVersion/text()", _filePackage);
     core.endGroup();
 
     core.info("Action done!");
@@ -36,13 +39,32 @@ async function run() {
   }
 }
 
-async function replaceXPath(filePath, xpath, replaceString) {
+function replaceXPath(filePath, xpathString, replaceString) {
 
-  const content = fs.readFileSync(filePath, 'utf8');
-  core.debug(content);
+  const xml = fs.readFileSync(filePath, 'utf8');
+  const doc = new DOMParser().parseFromString(xml, 'application/xml');
+  const nodes = xpath.select(xpathString, doc);
+
+  if (nodes.length > 0) {
+    const node = nodes[0];
+    core.debug(getNodePath(node));
+    node.textContent = replaceString;
+  } else {
+    core.info(`Node [${xpathString}] not found`);
+  }
+
+  fs.writeFileSync(filePath, new XMLSerializer().serializeToString(doc));
 
 }
 
+function getNodePath(node) {
+  let parentNode = node.parentNode;
+  if (parentNode == null) {
+      return node.nodeName;
+  }
+  return (getNodePath(parentNode)) + "/" + node.nodeName;
+}
+
 module.exports = {
-  run,
+  run
 };

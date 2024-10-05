@@ -6,6 +6,6 @@ set INPUT_version-assembly=1.0
 set INPUT_version-file=1.0.0.123
 set INPUT_version-informational=1.0.0-beta.1+204ff0a
 set INPUT_version-package=1.0.0-beta.1
-set INPUT_projectFile=package.props
+set INPUT_projectFile=tests/package.props
 
 node ./dist/index.js
