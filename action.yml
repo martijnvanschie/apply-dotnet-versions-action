@@ -1,0 +1,36 @@
+name: "Create dotnet versions"
+description: "Create various dotnet assembly versions bases on the Semantic Versioning 2.0.0 standard"
+author: "Martijn van Schie"
+
+inputs:
+  version-assembly:
+    description: "The version according to the `AssemblyVersion` format."
+    required: true
+  version-file:
+    description: "The version according to the `FileVersion` format."
+    required: true
+  version-informational:
+    description: "The version according to the `InformationalVersion` format."
+    required: true
+  version-package:
+    description: "The version according to the `PackageVersion` format."
+    required: true
+  projectFile:
+    description: "The dotnet project file to apply the versions to."  
+    required: true  
+
+outputs:
+  version-assembly:
+    description: "The version according to the `AssemblyVersion` format."
+  version-file:
+    description: "The version according to the `FileVersion` format."
+  version-informational:
+    description: "The version according to the `InformationalVersion` format."
+  version-package:
+    description: "The version according to the `PackageVersion` format."
+  buildnumber:
+    description: "The unique build number generated during the action."
+
+runs:
+  using: node20
+  main: dist/index.js
