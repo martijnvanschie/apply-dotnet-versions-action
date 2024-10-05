@@ -1,0 +1,61 @@
+name: Verify Create Dotnet Version
+
+on:
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+  workflow_dispatch:
+
+env:
+  RUNNER_DEBUG: 1
+
+jobs:
+  apply-dotnet-versions-local:
+    runs-on: ubuntu-latest
+    name: Test the create-dotnet-versions locally
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Apply version step
+        id: dotnetversion
+        uses: ./
+        with:
+          version-assembly: "1.1"
+          version-file: "1.2"
+          version-informational: "1.3"
+          version-package: "1.4"
+          projectFile: "tests/package.props"
+
+      # - name: Print all output joined
+      #   run: echo -e '${{join(steps.dotnetversion.outputs.*, '\n')}}'
+
+      # - name: Print version-assembly
+      #   run: echo version-assembly ${{ steps.dotnetversion.outputs.version-assembly }}
+
+      # - name: Echo all version outputs
+      #   run: |
+      #     echo version-assembly is ${{ steps.dotnetversion.outputs.version-assembly }}
+      #     echo "version-file = ${{ steps.dotnetversion.outputs.version-file }}"
+      #     echo "version-informational = ${{ steps.dotnetversion.outputs.version-informational }}"
+      #     echo "version-package = ${{ steps.dotnetversion.outputs.version-package }}"
+      #     echo "buildnumber = ${{ steps.dotnetversion.outputs.buildnumber }}"
+
+      # - name: Verify Versions
+      #   uses: actions/github-script@v7
+      #   with:
+      #     script: |
+      #       if ('${{ steps.dotnetversion.outputs.version-assembly }}' != '1.2') {
+      #         core.setFailed('version-assembly is incorrect')
+      #       }
+      #       if ('${{ steps.dotnetversion.outputs.version-file }}'.startsWith('1.2.3') == false) {
+      #         core.setFailed('version-file is incorrect')
+      #       } 
+      #       if ('${{ steps.dotnetversion.outputs.version-informational }}'.startsWith('1.2.3-beta.4') == false) {
+      #         core.setFailed('version-informational is incorrect')
+      #       } 
+      #       if ('${{ steps.dotnetversion.outputs.version-package }}' != '1.2.3-beta.4') {
+      #         core.setFailed('version-package is incorrect')
+      #       }
